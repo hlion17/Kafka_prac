@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.*;
 
 @Configuration
-public class KafkaReceiver {
+public class MyKafkaConsumerFactory {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
@@ -32,5 +32,6 @@ public class KafkaReceiver {
     public KafkaConsumer<String, String> kafkaConsumer() {
         return new KafkaConsumer<>(getConfiguration());
     }
+
 
 }
