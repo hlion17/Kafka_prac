@@ -11,6 +11,9 @@ sed -i 's/log.dirs=\/tmp\/kafka-logs/log.dirs=\/data/g' config/server.properties
 # sed -i 's/zookeeper.connect=localhost:2181/zookeeper.connect=zookeeper-0.zookeeper.default.svc.cluster.local:2181,zookeeper-1.zookeeper.default.svc.cluster.local:2181,zookeeper-2.zookeeper.default.svc.cluster.local:2181/' config/server.properties
 sed -i 's/zookeeper.connect=localhost:2181/zookeeper.connect=zookeeper:2181/g' config/server.properties
 
+# Modify listener address for kafka client
+sed -i 's/advertised.listeners=PLAINTEXT:\/\/your.host.name:9020/advertised.listeners=PLAINTEXT:\/\/192.168.111.128:9092/g' config/server.properties
+
 # Remove unnecessary files of /data (Log file directory)
 rm -rf /data
 
