@@ -55,7 +55,8 @@ public class MySubscriber implements CommandLineRunner {
                     Headers headers = record.headers();
 
                     for (Header header : headers) {
-                        log.debug("Consumer Record Header Info: {}", header);
+                        String headerInfo = String.format("key = %s, value = %s", header.key(), new String(header.value()));
+                        log.info("Consumer Record Header Info: {}", headerInfo);
                     }
 
                     String infoString = String.format("messageHash: %s, meessage: %s, partition: %s, offset: %s, timestamp: %s",
