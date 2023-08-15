@@ -33,5 +33,4 @@ public class MyKafkaConsumerFactory {
         return new KafkaConsumer<>(getConfiguration());
     }
 
-
 }

@@ -1,5 +1,6 @@
 package com.kafka.example.kafka_app.consumer;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -8,7 +9,6 @@ import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.Headers;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.time.Duration;
@@ -20,44 +20,42 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.function.Consumer;
 
-@Component
-public class MyKafkaSubscriber implements CommandLineRunner {
-
-    private String topic;
-    private Consumer<String> handler;
-
-    private final KafkaConsumer<String, String> consumer;
-
-    public MyKafkaSubscriber(KafkaConsumer<String, String> kafkaConsumer) {
-        this.consumer = kafkaConsumer;
+@Slf4j
+public class MySubscriber implements CommandLineRunner {
+    final String topicName;
+    Consumer<String> eventHandler;
+    KafkaConsumer<String, String> kafkaConsumer;
+    public MySubscriber(String dispatcherId,
+                        Consumer<String> eventHandler,
+                        KafkaConsumer<String, String> kafkaConsumer) {
+        this.topicName = dispatcherId;
+        this.eventHandler = eventHandler;
+        this.kafkaConsumer = kafkaConsumer;
     }
 
     @PostConstruct
-    public void init() {
-        this.handler = (e) -> {
-            System.out.println("Handle Message: " + e);
-        };
-        this.topic = "test-event";
+    public void initialize() {
+        log.info("MyKafkaSubscriber is started to subscribe {} Topic", topicName);
+        kafkaConsumer.subscribe(Collections.singletonList(topicName));
     }
 
     @Override
     public void run(String... args) {
-        System.out.println(">>>> consumer start <<<<");
-        consumer.subscribe(Collections.singletonList(topic));
         while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
+            log.info("kafkaConsumer polling {} ...", kafkaConsumer.subscription());
+            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofSeconds(1));
             for (ConsumerRecord<String, String> record : records) {
                 if (record.value() != null) {
                     TopicPartition tp = new TopicPartition(record.topic(), record.partition());
                     OffsetAndMetadata oam = new OffsetAndMetadata(record.offset() + 1);
                     Map<TopicPartition, OffsetAndMetadata> commitInfo = Collections.singletonMap(tp, oam);
-                    consumer.commitSync(commitInfo);
+                    kafkaConsumer.commitSync(commitInfo);
 
                     // print result log
                     Headers headers = record.headers();
 
                     for (Header header : headers) {
-                        System.out.println(header);
+                        log.debug("Consumer Record Header Info: {}", header);
                     }
 
                     String infoString = String.format("messageHash: %s, meessage: %s, partition: %s, offset: %s, timestamp: %s",
@@ -67,16 +65,15 @@ public class MyKafkaSubscriber implements CommandLineRunner {
                             record.offset(),
                             LocalDateTime.ofInstant(Instant.ofEpochMilli(record.timestamp()), TimeZone.getDefault().toZoneId()).format(DateTimeFormatter.ISO_DATE_TIME)
                     );
-                    System.out.println(infoString);
+                    log.info("Consumer Record Info: {}", infoString);
 
                     // do handler method
-                    System.out.println(">>>> Execute Message Handler <<<<");
-                    handler.accept(record.value());
+                    log.info("Execute Message Handler");
+                    eventHandler.accept(record.value());
                 } else {
-                    System.err.println("Cannot get message from kafka server");
+                    log.error("Cannot get message from kafka server: Consumer record is null");
                 }
             }
         }
     }
-
 }
