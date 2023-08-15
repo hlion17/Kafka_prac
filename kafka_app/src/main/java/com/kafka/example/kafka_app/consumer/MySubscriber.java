@@ -43,16 +43,16 @@ public class MySubscriber implements CommandLineRunner {
     public void run(String... args) {
         while (true) {
             log.info("kafkaConsumer polling {} ...", kafkaConsumer.subscription());
-            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofSeconds(10));
-            for (ConsumerRecord<String, String> record : records) {
-                if (record.value() != null) {
-                    TopicPartition tp = new TopicPartition(record.topic(), record.partition());
-                    OffsetAndMetadata oam = new OffsetAndMetadata(record.offset() + 1);
+            ConsumerRecords<String, String> polledRecords = kafkaConsumer.poll(Duration.ofSeconds(10));
+            for (ConsumerRecord<String, String> polledRecord : polledRecords) {
+                if (polledRecord.value() != null) {
+                    TopicPartition tp = new TopicPartition(polledRecord.topic(), polledRecord.partition());
+                    OffsetAndMetadata oam = new OffsetAndMetadata(polledRecord.offset() + 1);
                     Map<TopicPartition, OffsetAndMetadata> commitInfo = Collections.singletonMap(tp, oam);
                     kafkaConsumer.commitSync(commitInfo);
 
                     // print result log
-                    Headers headers = record.headers();
+                    Headers headers = polledRecord.headers();
 
                     for (Header header : headers) {
                         String headerInfo = String.format("key = %s, value = %s", header.key(), new String(header.value()));
@@ -60,17 +60,17 @@ public class MySubscriber implements CommandLineRunner {
                     }
 
                     String infoString = String.format("messageHash: %s, meessage: %s, partition: %s, offset: %s, timestamp: %s",
-                            record.value().hashCode(),
-                            record.value(),
-                            record.partition(),
-                            record.offset(),
-                            LocalDateTime.ofInstant(Instant.ofEpochMilli(record.timestamp()), TimeZone.getDefault().toZoneId()).format(DateTimeFormatter.ISO_DATE_TIME)
+                            polledRecord.value().hashCode(),
+                            polledRecord.value(),
+                            polledRecord.partition(),
+                            polledRecord.offset(),
+                            LocalDateTime.ofInstant(Instant.ofEpochMilli(polledRecord.timestamp()), TimeZone.getDefault().toZoneId()).format(DateTimeFormatter.ISO_DATE_TIME)
                     );
                     log.info("Consumer Record Info: {}", infoString);
 
                     // do handler method
                     log.info("Execute Message Handler");
-                    eventHandler.accept(record.value());
+                    eventHandler.accept(polledRecord.value());
                 } else {
                     log.error("Cannot get message from kafka server: Consumer record is null");
                 }
