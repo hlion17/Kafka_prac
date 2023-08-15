@@ -43,7 +43,7 @@ public class MySubscriber implements CommandLineRunner {
     public void run(String... args) {
         while (true) {
             log.info("kafkaConsumer polling {} ...", kafkaConsumer.subscription());
-            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofSeconds(1));
+            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofSeconds(10));
             for (ConsumerRecord<String, String> record : records) {
                 if (record.value() != null) {
                     TopicPartition tp = new TopicPartition(record.topic(), record.partition());
