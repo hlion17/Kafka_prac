@@ -56,11 +56,11 @@ kafka_app/src/main/java/com/kafka/example.kafka_app/KafkaAppApplication.java 실
 ## 4. Create kafka connector
 
 ### 4. 1. DB source connector 생성
-kafka_app/http/connector/kafka_connector_source.http
+- kafka_app/http/connector/kafka_connector_source.http
 ![img_1.png](img_1.png)
 
 ### 4. 2. DB sink connector 생성
-kafka_app/http/connector/kafka_connector_sink.http
+- kafka_app/http/connector/kafka_connector_sink.http
 ![img_2.png](img_2.png)
 
 ## 5. Publish message to test-event topic
