@@ -1,0 +1,1 @@
+GET http://{{connector}}/connectors?expand=status&expand=info

@@ -1,0 +1,19 @@
+POST http://{{connector}}/connectors
+Content-Type: application/json
+
+{
+  "name": "source_received_message",
+  "config": {
+    "connector.class" : "io.confluent.connect.jdbc.JdbcSourceConnector",
+    "connection.url" : "jdbc:mysql://host.docker.internal:3306/kafkasub",
+    "connection.user" : "root",
+    "connection.password" : "root",
+    "mode": "incrementing",
+    "incrementing.column.name":"id",
+    "topic.prefix" : "jdbc-connector-",
+    "poll.interval.ms" : 2000,
+    "table.whitelist" : "received_message",
+    "topic.creation.default.replication.factor" : 1,
+    "topic.creation.default.partitions" : 1
+  }
+}

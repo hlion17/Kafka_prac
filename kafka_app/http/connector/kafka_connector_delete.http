@@ -1,0 +1,1 @@
+DELETE http://{{connector}}/connectors/jdbc_sink_mysql_02

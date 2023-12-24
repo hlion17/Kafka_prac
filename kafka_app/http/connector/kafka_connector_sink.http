@@ -1,0 +1,21 @@
+POST http://{{connector}}/connectors
+Content-Type: application/json
+
+{
+  "name": "sink_message",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "connection.url": "jdbc:mysql://host.docker.internal:3306/sinkdb",
+    "connection.user": "root",
+    "connection.password": "root",
+    "auto.create": "false",
+    "auto.evolve": "false",
+    "delete.enabled": "false",
+    "tasks.max": "1",
+    "topics": "jdbc-connector-received_message",
+    "table.name.format": "sinkdb.message_sink",
+    "pk.mode": "record_value",
+    "pk.fields": "id",
+    "insert.mode": "upsert"
+  }
+}

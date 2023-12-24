@@ -1,0 +1,9 @@
+### kafka producer API test
+POST http://{{host}}/send
+Content-Type: application/json
+
+{
+  "topic": "test-event",
+  "key": "testKey",
+  "message": "테스트 메시지 01"
+}

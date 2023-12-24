@@ -1,0 +1,1 @@
+GET http://{{connector}}/connectors/source_received_message/status
