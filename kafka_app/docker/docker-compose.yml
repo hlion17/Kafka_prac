@@ -55,4 +55,4 @@ services:
       CONNECT_LOG4J_ROOT_LOGLEVEL: WARN
       CONNECT_PLUGIN_PATH: "/usr/share/java,/etc/kafka-connect/jars"
     volumes:
-      - C:\JYG\workspace\Kafka_prac\kafka_cluster_docker\prac_02\confluentinc-kafka-connect-jdbc-10.7.4\lib:/etc/kafka-connect/jars
+      - ./confluentinc-kafka-connect-jdbc-10.7.4/lib:/etc/kafka-connect/jars
